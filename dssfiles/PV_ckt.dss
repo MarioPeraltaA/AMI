@@ -1,0 +1,172 @@
+! ---------------------------
+! Daily circuit: 14 costumers
+! ---------------------------
+
+clear
+new circuit.PV_ckt basekV=230 pu=1.0 angle=0 frequency=60 phases=3
+set defaultBaseFrequency=60
+
+! Se llama a la biblioteca de conductores (debe estar en la misma carpeta)
+redirect WireDataAAC.dss 
+redirect WireDataAAAC.dss 
+redirect WireDataACSR.dss 
+redirect WireDataCU.dss 
+
+! Se llama a la biblioteca de triplex (debe estar en la misma carpeta)
+
+redirect triplexneutroAAC.dss
+
+! Define el CNData Conductor de cobre 35 kV - 33% Neutro - aislamiento al 100%  
+new CNData.Cu_500_37STR_35kV_1/3N_EPR100	Normamps=476	Runits=kft	Rdc=0.02116	Rstrand=0.999	GMRUnits=in	GMRac=0.313	GmrStrand=0.0397	Radunits=in	DIAM=0.8130	DiaIns=1.54	InsLayer=0.345	DiaStrand=0.1019	DiaCable=2.10	EpsR=3	k=17
+
+! Define los line spacing
+
+new LineSpacing.3F_MTH nconds=4 nphases=3 units=m x=[-1 0 1 0.2] h=[13 13 13 8]
+new LineSpacing.2F_MTH nconds=3 nphases=2 units=m x=[-1 1 0.2]   h=[11 11 7.1]
+new LineSpacing.1F_MTH nconds=2 nphases=1 units=m x=[0 0.2] h=[11 7.1]
+new LineSpacing.1F_3WIRE nconds=3 nphases=2 units=m x=[0.20 0.20 0.20] h=[6.7 6.90 7.1]  
+
+! Define la geometría de las líneas
+new Linegeometry.3F_500_CU_UG  nconds=3 nphases=3 units=cm
+~ cond=1 cncable=Cu_500_37STR_35kV_1/3N_EPR100 x=-50 h=-75 
+~ cond=2 cncable=Cu_500_37STR_35kV_1/3N_EPR100 x=0 h=-75 
+~ cond=3 cncable=Cu_500_37STR_35kV_1/3N_EPR100 x=50 h=-75 
+
+new Linegeometry.3F_394_AAA_4/0AAC_H  nconds=4 nphases=3 spacing=3F_MTH 
+~ wires=[AAAC_394_19STR AAAC_394_19STR AAAC_394_19STR AAC_4/0_7STR] Reduce=Y 
+
+new Linegeometry.2F_4/0_AAC_3/0AAC_B  nconds=3 nphases=2 spacing=2F_MTH 
+~ wires=[AAC_4/0_7STR AAC_4/0_7STR AAC_3/0_7STR] Reduce=Y 
+
+new Linegeometry.1F_4/0_AAC_3/0AAC_M  nconds=2 nphases=1 spacing=1F_MTH  
+~ wires=[AAC_4/0_7STR AAC_3/0_7STR] Reduce=Y
+
+new Linegeometry.1F_3/0AAC3/0AAC_P nconds=3 nphases=2 spacing=1F_3WIRE
+~ wires=[AAC_3/0_7STR AAC_3/0_7STR AAC_3/0_7STR]  Reduce=Y
+
+! Se define el transformador de potencia
+
+new transformer.subestacion phases=3 windings=3 %noloadloss=0.0833 %imag=0.00  buses=[sourcebus.1.2.3 busMV1.1.2.3 busT.1.2.3] conns=[wye,wye,delta] kvs=[230 34.5 13.8] kvas=[30000 30000 30000] Xhl=10 Xht=18 Xlt=7 %Rs=[0.0 0.0 0.0]
+
+! Se definen las líneas de MT
+
+new line.linsub3F    bus1=busMV1.1.2.3 bus2=busMV2.1.2.3 geometry=3F_500_CU_UG length=337 units=m 
+new line.linaerea3F1 bus1=busMV2.1.2.3 bus2=busMV3.1.2.3 geometry=3F_394_AAA_4/0AAC_H length=800 units=m 
+new line.linaerea3F2 bus1=busMV3.1.2.3 bus2=busMV4.1.2.3 geometry=3F_394_AAA_4/0AAC_H length=50 units=m 
+
+new line.linaerea2F  bus1=busMV3.2.3 bus2=busMV5.2.3 geometry=2F_4/0_AAC_3/0AAC_B length=300 units=m
+
+new line.linaerea1F1 bus1=busMV5.3 bus2=busTx2.3 geometry=1F_4/0_AAC_3/0AAC_M length=100 units=m
+new line.linaerea1F2 bus1=busTx2.3 bus2=busTx1.3 geometry=1F_4/0_AAC_3/0AAC_M length=200 units=m
+new line.linaerea1F3 bus1=busMV5.2 bus2=busTx3.2 geometry=1F_4/0_AAC_3/0AAC_M length=100 units=m
+new line.linaerea1F4 bus1=busTx3.2 bus2=busTx4.2 geometry=1F_4/0_AAC_3/0AAC_M length=200 units=m
+
+! se definen los transformadores trifásicos
+new transformer.Tx3F phases=3 windings=2 %noloadloss=0.25 %imag=1.42  buses=[busMV2.1.2.3 busLV1.1.2.3] conns=[wye,wye] kvs=[34.5 0.48] kvas=[1000 1000] Xhl=5.49 %Rs=[0.455 0.455]   
+
+new transformer.Txbanco_1 phases=1 windings=2 Xhl=4.98 %Rs=[0.75 0.75] %noloadloss=0.36 %imag=1.30 Buses=[busMV4.1.4  busLV2.1.2]  kvs=[19.92 0.24] kVAs=[100 100] conns=[wye wye] 
+new transformer.Txbanco_2 phases=1 windings=3 Xhl=5.97 Xht=5.97 Xlt=3.98 %Rs=[0.75 1.50 1.50] %noloadloss=0.36  %imag=1.30 Buses=[busMV4.2.4  busLV2.2.0 busLV2.0.3]  kvs=[19.92 0.12 0.12] kVAs=[100 100 100] conns=[wye wye wye] 
+new transformer.Txbanco_3 phases=1 windings=2 Xhl=4.98 %Rs=[0.75 0.75] %noloadloss=0.36 %imag=1.30 Buses=[busMV4.3.4  busLV2.3.1]  kvs=[19.92 0.24] kVAs=[100 100] conns=[wye wye] 
+
+! Se definen los transformadores monofásicos
+
+new transformer.Tx1f_1 phases=1 windings=3 Xhl=5.65 Xht=5.65 Xlt=3.77 %Rs=[1.10 2.20 2.20] %noloadloss=0.47  %imag=1.30 Buses=[busTx1.3  LVBUSTx1_1.1.0 LVBUSTx1_1.0.2]  kvs=[19.92 0.12 0.12] kVAs=[25 25 25] conns=[wye wye wye] 
+new transformer.Tx1f_2 phases=1 windings=3 Xhl=5.52 Xht=5.52 Xlt=3.68 %Rs=[1.21 2.42 2.42] %noloadloss=0.56  %imag=1.40 Buses=[busTx2.3  LVBUSTx2_1.1.0 LVBUSTx2_1.0.2]  kvs=[19.92 0.12 0.12] kVAs=[15 15 15] conns=[wye wye wye]  
+new transformer.Tx1f_3 phases=1 windings=3 Xhl=5.80 Xht=5.80 Xlt=3.87 %Rs=[0.96 1.92 1.92] %noloadloss=0.44  %imag=1.10 Buses=[busTx3.2  LVBUSTx3_1.1.0 LVBUSTx3_1.0.2]  kvs=[19.92 0.12 0.12] kVAs=[37.5 37.5 37.5] conns=[wye wye wye]  
+new transformer.Tx1f_4 phases=1 windings=3 Xhl=5.90 Xht=5.90 Xlt=3.93 %Rs=[0.85 1.70 1.70] %noloadloss=0.37  %imag=1.00 Buses=[busTx4.2  LVBUSTx4_1.1.0 LVBUSTx4_1.0.2]  kvs=[19.92 0.12 0.12] kVAs=[50 50 50] conns=[wye wye wye] 
+
+! se definen las líneas secundarias
+
+new line.secTx1_12 bus1=LVBUSTx1_1.1.2 bus2=LVBUSTx1_2.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx1_23 bus1=LVBUSTx1_2.1.2 bus2=LVBUSTx1_3.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx1_34 bus1=LVBUSTx1_3.1.2 bus2=LVBUSTx1_4.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+
+new line.secTx2_12 bus1=LVBUSTx2_1.1.2 bus2=LVBUSTx2_2.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx2_23 bus1=LVBUSTx2_2.1.2 bus2=LVBUSTx2_3.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx2_34 bus1=LVBUSTx2_3.1.2 bus2=LVBUSTx2_4.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+
+new line.secTx3_12 bus1=LVBUSTx3_1.1.2 bus2=LVBUSTx3_2.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx3_23 bus1=LVBUSTx3_2.1.2 bus2=LVBUSTx3_3.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx3_34 bus1=LVBUSTx3_3.1.2 bus2=LVBUSTx3_4.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx3_45 bus1=LVBUSTx3_4.1.2 bus2=LVBUSTx3_5.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+
+new line.secTx4_12 bus1=LVBUSTx4_1.1.2 bus2=LVBUSTx4_2.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx4_23 bus1=LVBUSTx4_2.1.2 bus2=LVBUSTx4_3.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx4_34 bus1=LVBUSTx4_3.1.2 bus2=LVBUSTx4_4.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+new line.secTx4_45 bus1=LVBUSTx4_4.1.2 bus2=LVBUSTx4_5.1.2 geometry=1F_3/0AAC3/0AAC_P length=12 units=m
+
+! se definen las acometidas
+
+new line.aco1 bus1=LVBUSTx1_4.1.2 bus2=LVBUSTx1_4c.1.2 linecode=tpx_6_Patella length=5 units=m
+new line.aco2 bus1=LVBUSTx1_3.1.2 bus2=LVBUSTx1_3c.1.2 linecode=tpx_6_Patella length=5 units=m
+new line.aco3 bus1=LVBUSTx1_2.1.2 bus2=LVBUSTx1_2c.1.2 linecode=tpx_6_Patella length=5 units=m
+
+new line.aco6 bus1=LVBUSTx2_4.1.2 bus2=LVBUSTx2_4c.1.2 linecode=tpx_4_Oyster length=5 units=m
+new line.aco5 bus1=LVBUSTx2_3.1.2 bus2=LVBUSTx2_3c.1.2 linecode=tpx_4_Oyster length=5 units=m
+new line.aco4 bus1=LVBUSTx2_2.1.2 bus2=LVBUSTx2_2c.1.2 linecode=tpx_4_Oyster length=5 units=m
+
+new line.aco7  bus1=LVBUSTx3_5.1.2 bus2=LVBUSTx3_5c.1.2 linecode=tpx_4_Oyster length=5 units=m
+new line.aco8  bus1=LVBUSTx3_4.1.2 bus2=LVBUSTx3_4c.1.2 linecode=tpx_4_Oyster length=5 units=m
+new line.aco9  bus1=LVBUSTx3_3.1.2 bus2=LVBUSTx3_3c.1.2 linecode=tpx_4_Oyster length=5 units=m
+new line.aco10 bus1=LVBUSTx3_2.1.2 bus2=LVBUSTx3_2c.1.2 linecode=tpx_4_Oyster length=5 units=m
+
+new line.aco14 bus1=LVBUSTx4_5.1.2 bus2=LVBUSTx4_5c.1.2 linecode=tpx_2_Clam length=5 units=m
+new line.aco13 bus1=LVBUSTx4_4.1.2 bus2=LVBUSTx4_4c.1.2 linecode=tpx_2_Clam length=5 units=m
+new line.aco12 bus1=LVBUSTx4_3.1.2 bus2=LVBUSTx4_3c.1.2 linecode=tpx_2_Clam length=5 units=m
+new line.aco11 bus1=LVBUSTx4_2.1.2 bus2=LVBUSTx4_2c.1.2 linecode=tpx_2_Clam length=5 units=m
+
+! Define las cargas trifásicas
+
+new load.carga3F1 bus1=busLV1.1.2.3 kV=0.48 model=8 conn=wye   kW=800 kVAr=200 status=fixed phases=3 vminpu=0.0 vmaxpu=1.2 zipv=(0.2,0.5,0.3,0.2,0.5,0.3,0.9)
+new load.carga3F2 bus1=busLV2.1.2.3 kV=0.24 model=8 conn=delta kW=200 kVAr=120 status=fixed phases=3 vminpu=0.0 vmaxpu=1.2 zipv=(1, 0, 0, 1, 0, 0, 0.9)
+
+! Define los loadshapes
+
+New Loadshape.Curve57R npts=96 minterval=15 mult=(file=profiles\Curve57R.dss) useactual=no
+New Loadshape.Curve174R npts=96 minterval=15 mult=(file=profiles\Curve174R.dss) useactual=no
+New Loadshape.Curve225R npts=96 minterval=15 mult=(file=profiles\Curve225R.dss) useactual=no
+New Loadshape.Curve231R npts=96 minterval=15 mult=(file=profiles\Curve231R.dss) useactual=no
+New Loadshape.Curve287R npts=96 minterval=15 mult=(file=profiles\Curve287R.dss) useactual=no
+New Loadshape.Curve300R npts=96 minterval=15 mult=(file=profiles\Curve300R.dss) useactual=no
+New Loadshape.Curve325R npts=96 minterval=15 mult=(file=profiles\Curve325R.dss) useactual=no
+New Loadshape.Curve475R npts=96 minterval=15 mult=(file=profiles\Curve475R.dss) useactual=no
+New Loadshape.Curve500R npts=96 minterval=15 mult=(file=profiles\Curve500R.dss) useactual=no
+New Loadshape.Curve516R npts=96 minterval=15 mult=(file=profiles\Curve516R.dss) useactual=no
+New Loadshape.Curve525R npts=96 minterval=15 mult=(file=profiles\Curve525R.dss) useactual=no
+New Loadshape.Curve578R npts=96 minterval=15 mult=(file=profiles\Curve578R.dss) useactual=no
+New Loadshape.Curve636R npts=96 minterval=15 mult=(file=profiles\Curve636R.dss) useactual=no
+New Loadshape.Curve770R npts=96 minterval=15 mult=(file=profiles\Curve770R.dss) useactual=no
+
+! Define las cargas monofásicas
+
+new load.cliente_1 bus1=LVBUSTx1_4c.1.2 kV=0.24 model=8 conn=wye kW=3 pf=0.98 status=variable daily=Curve325R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_2 bus1=LVBUSTx1_3c.1.2 kV=0.24 model=8 conn=wye kW=4 pf=0.98 status=variable daily=Curve174R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_3 bus1=LVBUSTx1_2c.1.2 kV=0.24 model=8 conn=wye kW=4 pf=0.96 status=variable daily=Curve300R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+
+new load.cliente_4 bus1=LVBUSTx2_2c.1.2 kV=0.24 model=8 conn=wye kW=5 pf=0.98 status=variable daily=Curve287R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_5 bus1=LVBUSTx2_3c.1.2 kV=0.24 model=8 conn=wye kW=2 pf=0.99 status=variable daily=Curve770R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_6 bus1=LVBUSTx2_4c.1.2 kV=0.24 model=8 conn=wye kW=4 pf=0.99 status=variable daily=Curve516R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+
+new load.cliente_7  bus1=LVBUSTx3_5c.1.2 kV=0.24 model=8 conn=wye kW=5 pf=0.95 status=variable daily=Curve57R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_8  bus1=LVBUSTx3_4c.1.2 kV=0.24 model=8 conn=wye kW=5 pf=0.96 status=variable daily=Curve231R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_9  bus1=LVBUSTx3_3c.1.2 kV=0.24 model=8 conn=wye kW=5 pf=0.97 status=variable daily=Curve636R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_10 bus1=LVBUSTx3_2c.1.2 kV=0.24 model=8 conn=wye kW=5 pf=0.98 status=variable daily=Curve525R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+
+new load.cliente_11  bus1=LVBUSTx4_2c.1.2 kV=0.24 model=8 conn=wye kW=10 pf=0.95 status=variable daily=Curve578R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_12  bus1=LVBUSTx4_3c.1.2 kV=0.24 model=8 conn=wye kW=10 pf=0.96 status=variable daily=Curve225R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_13  bus1=LVBUSTx4_4c.1.2 kV=0.24 model=8 conn=wye kW=10 pf=0.97 status=variable daily=Curve500R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+new load.cliente_14  bus1=LVBUSTx4_5c.1.2 kV=0.24 model=8 conn=wye kW=10 pf=0.98 status=variable daily=Curve475R phases=1 zipv=(0.0,1.0,0.0,0.0,1.0,0.0,0.9)
+
+! muestra las impedancias y capacitancias de la línea
+! show lineconstants [60] [mile]
+
+new monitor.subestacionPQ element=transformer.subestacion terminal=1 mode=1 ppolar=no
+new monitor.subestacionVI element=transformer.subestacion terminal=1 mode=0 ppolar=no
+
+! Indicamos que la simulación debe ser tipo diaria
+set mode=daily stepsize=15m number=96 
+solve
+
+! exportamos los resultados del monitor en subestacion 
+export monitor subestacionPQ
+export monitor subestacionVI
