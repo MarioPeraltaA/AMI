@@ -1,0 +1,7 @@
+! Esto es un comentario (ignorado por OpenDSS) ! Primero limpiamos el OpenDSS
+clear
+! Ahora creamos el nuevo circuito de nombre “ejemplo”
+new circuit.ejemplo basekV=230 pu=1.0 phases=3 frequency=60 Isc3=2000 Isc1=2100 ! resolvemos
+solve
+! Mostramos en pantalla el resultado
+show voltages LN nodes

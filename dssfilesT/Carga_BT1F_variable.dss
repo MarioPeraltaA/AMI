@@ -1,0 +1,27 @@
+clear
+set defaultbasefrequency=60
+
+! define un nuevo circuito de baja tensión
+new circuit.baja_tension BasekV=0.24 pu=1.00 angle=0 frequency=60 phases=2
+
+! define los loadshapes
+New Loadshape.loadshape_1 npts=144 minterval=10 mult=(file=loadshape_1.txt) useactual=no
+New Loadshape.loadshape_2 npts=144 minterval=10 mult=(file=loadshape_2.txt) useactual=no
+New Loadshape.loadshape_3 npts=144 minterval=10 mult=(file=loadshape_3.txt) useactual=no
+New Loadshape.loadshape_4 npts=144 minterval=10 mult=(file=loadshape_4.txt) useactual=no
+New Loadshape.loadshape_5 npts=144 minterval=10 mult=(file=loadshape_5.txt) useactual=no
+New Loadshape.loadshape_6 npts=144 minterval=10 mult=(file=loadshape_6.txt) useactual=no
+
+! define una carga monofásica de BT variable
+new load.BT1F bus1=sourcebus.1.2 phases=1 kV=0.24 model=1
+~ conn=wye kW=1.0 pf=1.0 status=variable daily=loadshape_3
+
+! creacion de un monitor donde se encuentra la carga
+new monitor.monofasico Element=vsource.source Terminal=1 Mode=1 ppolar=no
+
+! simulacion tipo diaria
+set mode=daily stepsize=10m number=144
+
+solve
+show voltages LN Nodes
+export monitor monofasico
