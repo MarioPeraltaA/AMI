@@ -1,6 +1,11 @@
 """Monitors data.
 
 Parse, organize and store monitor data from OpenDSS.
+
+    Author: Mario Roberto Peralta A.
+    email: Mario.Peralta@ucr.ac.cr
+
+
 """
 
 
@@ -16,6 +21,7 @@ class dssData:
 
         [kW] and [kVAr] where L is number of lines meassured by
         the monitor. It sums up the contribution of each phase.
+
         """
         self.current_path = PQpath
         route = PQpath
@@ -43,6 +49,7 @@ class dssData:
         [V] and [A] where T is number of threads meassured by
         the monitor. It sets the attribute dataVI as:
         [((Vabc, deg_v), (Iabc, deg_i))]
+
         """
         self.current_path = VIpath
         monitorVI = []

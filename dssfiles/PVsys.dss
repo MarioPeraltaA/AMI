@@ -12,12 +12,12 @@ New Loadshape.Irrad npts=24 interval=1
 New Tshape.Temp npts=24 interval=1
 ~ temp=[25 25 25 25 25 25 25 25 35 40 45 50 60 60 55 40 35 30 25 25 25 25 25 25]
 ! PVsystem
-New PVsystem.PV phases=3 bus1=busTxPV kV=0.480 irrad=0.98 pmpp=25 temperature=25 pf=1
+New PVsystem.PV phases=3 bus1=busTxPV kV=0.480 irrad=0.98 pmpp=0.5 temperature=25 pf=1
 ~ %cutin=0.1 %cutout=0.1 effcurve=Eff P-tcurve=FatorPvsT Daily=Irrad Tdaily=Temp
 
 ! -----------
 ! Transformer
 ! -----------
 New Transformer.TxPV phases=3 xhl=5.750000
-~ wdg=1 bus=busTxPV kV=0.480 kVA=25 conn=wye
-~ wdg=2 bus=busC kV=0.240 kVA=25 conn=wye
+~ wdg=1 bus=busTxPV.1.2.3 kV=0.480 kVA=25 conn=wye
+~ wdg=2 bus=busDER.1.2.3 kV=0.240 kVA=25 conn=wye
