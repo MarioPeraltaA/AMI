@@ -1,0 +1,4 @@
+new Energymeter.Met_Sub Element=line.MV3PMAR00 Terminal=1 
+new Energymeter.Met_MAR1P_1 Element=transformer.MAR1P_1 Terminal=1 
+new Energymeter.Met_MAR1P_2 Element=transformer.MAR1P_2 Terminal=1 
+new Energymeter.Met_MAR1P_3 Element=transformer.MAR1P_3 Terminal=1 

@@ -1,0 +1,23 @@
+! ----------------------
+! PVSystem Element Model
+! ----------------------
+! Curva P-T [PU] del promedio de Pmpp vs temperatura (esta curva es para Pmpp para 25 gradC)
+New XYCurve.MyPvsT npts=4 xarray=[0 25 75 100] yarray=[1.2 1.0 0.8 0.6]
+
+! Curva de eficiencia VS Potencia (en PU)
+New XYCurve.MyEff npts=4 xarray=[.1 .2 .4 1.0] yarray=[.86 .9 .93 .97]
+
+! Curva de Irradiancia [PU]
+New Loadshape.MyIrrad npts=24 interval=1 mult=[0 0 0 0 0 .01 .19 .5 .76 .96 1.0 0.985 0.92 .74 .565 .38 .25 .026 0 0 0 0 0 0]
+
+! Curva de temperatura 24-hr
+New Tshape.MyTemp npts=24 interval=1 temp=[17, 17, 17, 17, 17, 18, 20, 21, 25, 40, 45, 50 60 60 55 40 35 30 20 20 18 18 18 18]
+
+! PVSystem definition: bus1 not define yet
+New PVSystem.PVtest phases=1 kV=0.240 kVA=1 pf=1 conn=wye
+~ temperature=25
+~ effcurve=Myeff
+~ P-TCurve=MyPvsT
+~ Daily=MyIrrad 
+~ TDaily=MyTemp
+~ %cutin=0

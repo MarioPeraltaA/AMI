@@ -1,0 +1,18 @@
+
+redirect Bibliotecas/bibliotecas.dss
+redirect MAR_LinesMV.dss
+redirect MAR_Substation.dss
+redirect MAR_Transformers.dss
+redirect MAR_LinesLV.dss
+redirect MAR_ServicesLV.dss
+redirect MAR_Loadshapes.dss
+redirect MAR_LoadsLV.dss
+redirect MAR_Monitors.dss
+redirect MAR_EnergyMeters.dss
+!Layer Substation: Subestacion
+!Layers LinesMV_aer: MT_aerea,
+!Layers LinesMV_sub: MT_subterranea,
+!Layers LinesLV_aer: Sec_aerea_Mario,
+!Layers Acometidas: Aco_aerea_Mario,
+!Layers LoadsLV: LV_loads,
+!Layers Transformers: Transformadores_Mario,

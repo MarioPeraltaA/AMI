@@ -1,0 +1,4 @@
+//Transformadores Monofasicos
+new transformer.MAR1P_1 phases=1 windings=3 Xhl=5.94 Xht=5.94 Xlt=3.96 %Rs=[0.61 1.21 1.21] %noloadloss=0.27 %imag=1.00 Buses=[BUSMVMAR77.2.0 BUSLVMAR1.1.0 BUSLVMAR1.0.2] kvs=[19.92 0.12 0.12] kVAs=[25.0 25.0 25.0] conns=[wye wye wye] Taps=[1, 1, 1] normhkva=25.0 !GroupMV=1 !GroupLV=1 
+new transformer.MAR1P_2 phases=1 windings=3 Xhl=5.94 Xht=5.94 Xlt=3.96 %Rs=[0.61 1.21 1.21] %noloadloss=0.27 %imag=1.00 Buses=[BUSMVMAR86.1.0 BUSLVMAR2.1.0 BUSLVMAR2.0.2] kvs=[19.92 0.12 0.12] kVAs=[50.0 50.0 50.0] conns=[wye wye wye] Taps=[1, 1, 1] normhkva=50.0 !GroupMV=1 !GroupLV=2 
+new transformer.MAR1P_3 phases=1 windings=3 Xhl=5.97 Xht=5.97 Xlt=3.98 %Rs=[0.56 1.12 1.12] %noloadloss=0.25 %imag=1.00 Buses=[BUSMVMAR94.2.0 BUSLVMAR3.1.0 BUSLVMAR3.0.2] kvs=[19.92 0.12 0.12] kVAs=[25.0 25.0 25.0] conns=[wye wye wye] Taps=[1, 1, 1] normhkva=25.0 !GroupMV=1 !GroupLV=3 
