@@ -15,20 +15,25 @@ Email: Mario.Peralta@ucr.ac.cr
 
 ```
 AMI/
-├─ ModelBased/
-│  ├─ dsshc.py
-│  ├─ hammer.ipynb
-|  ├─ PVcurves.dss
-│  ├─ DSS/
-|  |  ├─ Bibliotecas/
-|  |  |  ├─ *.dss
-|  |  ├─ *.dss
-│  ├─ GIS/
-|  |  ├─ *.shp
-├─ ModelFree/
-│  ├─ *.py
-│  ├─ *.json
-├─ README.md
-├─ Vcurves.pdf
-├─ .gitignore
+├── ModelBased/
+   ├── dsshc.py
+   ├── hammer.ipynb
+   ├── PVcurves.dss
+   ├── DSS/
+       ├── Bibliotecas/
+           └── *.dss
+       ├── profiles/
+           ├── commercial
+               └── *.csv
+           ├── residential
+               └── *.csv
+           └── *.json
+       └── *.dss
+   ├── GIS/
+      └── *.shp
+├── ModelFree/
+    ├── HC.py
+    └── *.json
+├── README.md
+└── .gitignore
 ```
